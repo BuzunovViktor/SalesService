@@ -1,8 +1,6 @@
 package ru.ourservices.salesInfoService.model.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.UUID;
@@ -11,22 +9,20 @@ import java.util.UUID;
 @Table(name = "Deal")
 public class Deal {
     @Id
+    @GeneratedValue
     private Long id;
-    private UUID apartmentId;
-    private BigDecimal price;
-    private String cityCode;
-    private Double area;
+    private BigDecimal dealPrice;
     private LocalDate localDate;
+    @OneToOne(mappedBy = "deal", cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY, optional = false)
+    @PrimaryKeyJoinColumn
+    private Apartment apartment;
 
     public Deal() {
     }
 
-    public Deal(Long id, UUID apartmentId, BigDecimal price, String cityCode, Double area, LocalDate localDate) {
-        this.id = id;
-        this.apartmentId = apartmentId;
-        this.price = price;
-        this.cityCode = cityCode;
-        this.area = area;
+    public Deal(BigDecimal dealPrice, LocalDate localDate) {
+        this.dealPrice = dealPrice;
         this.localDate = localDate;
     }
 
@@ -38,36 +34,12 @@ public class Deal {
         this.id = id;
     }
 
-    public UUID getApartmentId() {
-        return apartmentId;
+    public BigDecimal getDealPrice() {
+        return dealPrice;
     }
 
-    public void setApartmentId(UUID apartmentId) {
-        this.apartmentId = apartmentId;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public String getCityCode() {
-        return cityCode;
-    }
-
-    public void setCityCode(String cityCode) {
-        this.cityCode = cityCode;
-    }
-
-    public Double getArea() {
-        return area;
-    }
-
-    public void setArea(Double area) {
-        this.area = area;
+    public void setDealPrice(BigDecimal dealPrice) {
+        this.dealPrice = dealPrice;
     }
 
     public LocalDate getLocalDate() {
@@ -76,5 +48,13 @@ public class Deal {
 
     public void setLocalDate(LocalDate localDate) {
         this.localDate = localDate;
+    }
+
+    public Apartment getApartment() {
+        return apartment;
+    }
+
+    public void setApartment(Apartment apartment) {
+        this.apartment = apartment;
     }
 }

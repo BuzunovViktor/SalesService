@@ -11,11 +11,16 @@ import java.util.List;
 
 @Repository
 public interface DealRepository extends JpaRepository<Deal, Long> {
-    @Query("SELECT d FROM Deal d WHERE LOWER(d.cityCode) = LOWER(:cityCode)")
+    @Query("SELECT d FROM Deal d")
     List<Deal> findByCode(@Param("cityCode") String cityCode);
 
-    @Query("SELECT new ru.ourservices.salesInfoService.model.aggregation.SumBigDecimalDouble" +
-            "(SUM(d.price) as income, SUM(d.area) as area)" +
-            "FROM Deal d WHERE LOWER(d.cityCode) = LOWER(:cityCode)")
-    SumBigDecimalDouble calculateIncomeAndArea(@Param("cityCode") String cityCode);
+//    @Query("SELECT new ru.ourservices.salesInfoService.model.aggregation.SumBigDecimalDouble" +
+//            "(SUM(d.price) as income, SUM(d.area) as area)" +
+//            "FROM Deal d WHERE LOWER(d.cityCode) = LOWER(:cityCode)")
+//    SumBigDecimalDouble hz(@Param("cityCode") String cityCode);
+
+//    @Query("SELECT new ru.ourservices.salesInfoService.model.aggregation.SumBigDecimalDouble" +
+//            "(SUM(d.price) as income, SUM(d.area) as area)" +
+//            "FROM SELECT d FROM Deal d JOIN Apartment a ON d.apartment.id = a.id WHERE LOWER(a.cityCode) = LOWER(:cityCode)")
+//    SumBigDecimalDouble calculateIncomeAndArea(@Param("cityCode") String cityCode);
 }

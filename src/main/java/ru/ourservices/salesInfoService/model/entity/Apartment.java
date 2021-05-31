@@ -1,8 +1,7 @@
 package ru.ourservices.salesInfoService.model.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.annotation.Nullable;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
@@ -11,19 +10,48 @@ import java.util.UUID;
 @Table(name = "Apartment")
 public class Apartment implements Serializable {
     @Id
-    private UUID id;
+    private Long id;
+    private UUID uuid;
+    private String cityCode;
     private String number;
-    private Number area;
+    private Double area;
+    @MapsId
+    @OneToOne
+    @JoinColumn(name="id")
+    private Deal deal;
 
     public Apartment() {
     }
 
-    public UUID getId() {
+    public Apartment(UUID uuid, String cityCode, String number, Double area) {
+        this.uuid = uuid;
+        this.cityCode = cityCode;
+        this.number = number;
+        this.area = area;
+    }
+
+    public String getCityCode() {
+        return cityCode;
+    }
+
+    public void setCityCode(String cityCode) {
+        this.cityCode = cityCode;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
+    }
+
+    public UUID getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(UUID uuid) {
+        this.uuid = uuid;
     }
 
     public String getNumber() {
@@ -34,33 +62,19 @@ public class Apartment implements Serializable {
         this.number = number;
     }
 
-    public Number getArea() {
+    public Double getArea() {
         return area;
     }
 
-    public void setArea(Number area) {
+    public void setArea(Double area) {
         this.area = area;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Apartment apartment = (Apartment) o;
-        return Objects.equals(id, apartment.id) && Objects.equals(number, apartment.number) && Objects.equals(area, apartment.area);
+    public Deal getDeal() {
+        return deal;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, number, area);
-    }
-
-    @Override
-    public String toString() {
-        return "Apartment{" +
-                "id=" + id +
-                ", number='" + number + '\'' +
-                ", area=" + area +
-                '}';
+    public void setDeal(Deal deal) {
+        this.deal = deal;
     }
 }
