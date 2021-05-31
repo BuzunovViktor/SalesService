@@ -1,4 +1,4 @@
-package ru.ourservices.salesinfoservice;
+package ru.ourservices.salesInfoService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
