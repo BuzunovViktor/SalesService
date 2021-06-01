@@ -7,11 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.ourservices.salesInfoService.model.dto.ApartmentData;
 import ru.ourservices.salesInfoService.model.dto.SaleForMonthInfo;
-import ru.ourservices.salesInfoService.model.dto.SoldApartmentInfo;
-import ru.ourservices.salesInfoService.model.entity.Apartment;
 import ru.ourservices.salesInfoService.model.dto.SaleInfo;
+import ru.ourservices.salesInfoService.model.dto.SoldApartmentInfo;
 import ru.ourservices.salesInfoService.service.SalesService;
 
+import javax.validation.Valid;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -35,8 +35,6 @@ public class SalesController {
                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
                                                           @RequestParam(name = "endDate")
                                                           @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate) {
-        System.out.println(startDate);
-        System.out.println(endDate);
         SaleForMonthInfo info = salesService.getSalesInfoBy(cityCode, startDate, endDate);
         return info == null
                 ? new ResponseEntity<>(HttpStatus.NOT_FOUND)
@@ -51,12 +49,12 @@ public class SalesController {
                 : new ResponseEntity<>(unsoldApartments, HttpStatus.OK);
     }
 
-    @PutMapping()
+    @PutMapping
     public ResponseEntity<?> storeApartmentSale(@PathVariable(name = "code") String cityCode,
-                                                @RequestBody SoldApartmentInfo soldApartmentInfo) {
+                                                @Valid @RequestBody SoldApartmentInfo soldApartmentInfo) {
         final boolean modified = salesService.storeApartmentSale(cityCode, soldApartmentInfo);
         return modified
-                ? new ResponseEntity<>(HttpStatus.OK)
+                ? new ResponseEntity<>(HttpStatus.CREATED)
                 : new ResponseEntity<>(HttpStatus.NOT_MODIFIED);
     }
 }

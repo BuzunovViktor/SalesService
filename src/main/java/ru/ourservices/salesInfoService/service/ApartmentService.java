@@ -19,13 +19,13 @@ import java.util.List;
 public class ApartmentService {
     @Autowired
     private RestTemplateBuilder builder;
-    @Value("${base.uri}")
-    private String baseUri;
+    @Value("${external.base.url}")
+    private String baseUrl;
 
     @Cacheable("cities")
     public List<City> getCities() {
         RestTemplate restClient = builder.build();
-        ResponseEntity<City[]> resp = restClient.getForEntity(baseUri.concat("/cities"), City[].class);
+        ResponseEntity<City[]> resp = restClient.getForEntity(baseUrl.concat("/cities"), City[].class);
         checkStatus(resp.getStatusCode());
         return Arrays.asList(resp.getBody());
     }
@@ -33,7 +33,7 @@ public class ApartmentService {
     @Cacheable("apartments")
     public List<ApartmentData> getApartments(String cityCode) {
         StringBuilder uriBuilder = new StringBuilder();
-        uriBuilder.append(baseUri).append("/city").append("/").append(cityCode).append("/apartments");
+        uriBuilder.append(baseUrl).append("/city").append("/").append(cityCode).append("/apartments");
         RestTemplate restClient = builder.build();
         ResponseEntity<ApartmentData[]> resp = restClient.getForEntity(uriBuilder.toString(), ApartmentData[].class);
         checkStatus(resp.getStatusCode());

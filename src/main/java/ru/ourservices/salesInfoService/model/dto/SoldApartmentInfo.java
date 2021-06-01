@@ -46,16 +46,16 @@ public class SoldApartmentInfo {
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof SoldApartmentInfo)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
         SoldApartmentInfo that = (SoldApartmentInfo) o;
-        return Objects.equals(getId(), that.getId())
-                && Objects.equals(getDateTime(), that.getDateTime())
-                && Objects.equals(getPrice(), that.getPrice());
+        return Objects.equals(id, that.id)
+                && Objects.equals(dateTime, that.dateTime)
+                && Objects.equals(price, that.price);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getId(), getDateTime(), getPrice());
+        return Objects.hash(id, dateTime, price);
     }
 
     @Override

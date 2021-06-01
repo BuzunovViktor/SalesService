@@ -11,9 +11,9 @@ import java.util.UUID;
 
 @Repository
 public interface ApartmentRepository extends JpaRepository<Apartment, Long> {
-    @Query("SELECT a FROM Apartment a WHERE LOWER(a.cityCode) = LOWER(:cityCode)")
+    @Query("SELECT a FROM Apartment a WHERE a.cityCode = :cityCode")
     List<Apartment> getBy(@Param("cityCode") String cityCode);
 
-    @Query("SELECT a FROM Apartment a WHERE LOWER(a.uuid) = LOWER(:uuid)")
+    @Query("SELECT a FROM Apartment a WHERE a.uuid = :uuid")
     Apartment getByUUID(@Param("uuid") UUID UUID);
 }

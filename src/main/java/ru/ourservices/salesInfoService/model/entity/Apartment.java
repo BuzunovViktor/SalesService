@@ -8,19 +8,18 @@ import java.util.Objects;
 import java.util.UUID;
 
 @Entity
-@Table(name = "Apartment",
-        uniqueConstraints = {@UniqueConstraint(columnNames = {"uuid"})})
+@Table(name = "apartment", uniqueConstraints = {@UniqueConstraint(columnNames = {"uuid"})})
 public class Apartment implements Serializable {
     @Id
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     private UUID uuid;
     @Column(name = "city_code")
     private String cityCode;
     private String number;
     private Float area;
-    @MapsId
     @OneToOne
-    @JoinColumn(name="id")
+    @JoinColumn(name="deal_id")
     @JsonBackReference
     private Deal deal;
 
@@ -108,7 +107,6 @@ public class Apartment implements Serializable {
                 ", cityCode='" + cityCode + '\'' +
                 ", number='" + number + '\'' +
                 ", area=" + area +
-                ", deal=" + deal +
                 '}';
     }
 }

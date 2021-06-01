@@ -10,6 +10,7 @@ import org.springframework.cache.concurrent.ConcurrentMapCache;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 
 import java.util.concurrent.TimeUnit;
 
@@ -23,17 +24,25 @@ public class Beans {
 
     @Bean("CacheManager")
     public CacheManager cacheManager(@Value("${cache.lifetime}") Long lifetime) {
+        final Long time = lifetime == null ? 10 : lifetime;
         return new ConcurrentMapCacheManager() {
             @Override
             protected Cache createConcurrentMapCache(String name) {
             return new ConcurrentMapCache(
                     name,
                     CacheBuilder.newBuilder()
-                                .expireAfterWrite(lifetime, TimeUnit.SECONDS)
+                                .expireAfterWrite(time, TimeUnit.SECONDS)
                                 .build().asMap(),
                     false);
             }
         };
+    }
+
+    @Bean(name = "multipartResolver")
+    public CommonsMultipartResolver multipartResolver() {
+        CommonsMultipartResolver multipartResolver = new CommonsMultipartResolver();
+        multipartResolver.setMaxUploadSize(100000);
+        return multipartResolver;
     }
 }
 

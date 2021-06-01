@@ -8,18 +8,18 @@ import java.util.Date;
 import java.util.Objects;
 
 @Entity
-@Table(name = "Deal")
+@Table(name = "deal")
 public class Deal {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy=GenerationType.IDENTITY)
     private Long id;
     private BigDecimal income;
     @Basic
     @Temporal(TemporalType.DATE)
     private Date date;
     @OneToOne(mappedBy = "deal", cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY, optional = false)
-    @PrimaryKeyJoinColumn
+              fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name="apartment_id")
     @JsonManagedReference
     private Apartment apartment;
 

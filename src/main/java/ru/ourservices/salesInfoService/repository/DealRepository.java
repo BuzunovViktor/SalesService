@@ -14,13 +14,13 @@ import java.util.List;
 public interface DealRepository extends JpaRepository<Deal, Long> {
     @Query("SELECT d FROM Deal d " +
             "JOIN Apartment a ON d.apartment.id = a.id " +
-            "WHERE LOWER(a.cityCode) = LOWER(:cityCode)")
+            "WHERE a.cityCode = :cityCode")
     List<Deal> getBy(@Param("cityCode") String cityCode);
 
     @Query("SELECT new ru.ourservices.salesInfoService.model.aggregation.SumBigDecimalDouble" +
             "(SUM(d.income) as income, SUM(a.area) as area) FROM Deal d " +
             "JOIN Apartment a ON d.apartment.id = a.id " +
-            "WHERE LOWER(a.cityCode) = LOWER(:cityCode) AND d.date BETWEEN :startDate AND :endDate")
+            "WHERE a.cityCode = :cityCode AND d.date BETWEEN :startDate AND :endDate")
     SumBigDecimalDouble calcIncomeAndArea(@Param("cityCode") String cityCode,
                                           @Param("startDate") Date startDate,
                                           @Param("endDate") Date endDate);
