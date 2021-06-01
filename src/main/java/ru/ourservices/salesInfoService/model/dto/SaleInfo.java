@@ -2,21 +2,24 @@ package ru.ourservices.salesInfoService.model.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Objects;
 import java.util.UUID;
 
 public class SaleInfo {
     private UUID apartmentId;
-    private BigDecimal price;
-    private LocalDate date;
+    private Float apartmentArea;
+    private Date dealDate;
+    private BigDecimal dealPrice;
 
     public SaleInfo() {
     }
 
-    public SaleInfo(UUID apartmentId, BigDecimal price, LocalDate date) {
+    public SaleInfo(UUID apartmentId, Float apartmentArea, Date dealDate, BigDecimal dealPrice) {
         this.apartmentId = apartmentId;
-        this.price = price;
-        this.date = date;
+        this.apartmentArea = apartmentArea;
+        this.dealDate = dealDate;
+        this.dealPrice = dealPrice;
     }
 
     public UUID getApartmentId() {
@@ -27,20 +30,28 @@ public class SaleInfo {
         this.apartmentId = apartmentId;
     }
 
-    public BigDecimal getPrice() {
-        return price;
+    public Float getApartmentArea() {
+        return apartmentArea;
     }
 
-    public void setPrice(BigDecimal price) {
-        this.price = price;
+    public void setApartmentArea(Float apartmentArea) {
+        this.apartmentArea = apartmentArea;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public Date getDealDate() {
+        return dealDate;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setDealDate(Date dealDate) {
+        this.dealDate = dealDate;
+    }
+
+    public BigDecimal getDealPrice() {
+        return dealPrice;
+    }
+
+    public void setDealPrice(BigDecimal dealPrice) {
+        this.dealPrice = dealPrice;
     }
 
     @Override
@@ -48,20 +59,24 @@ public class SaleInfo {
         if (this == o) return true;
         if (!(o instanceof SaleInfo)) return false;
         SaleInfo saleInfo = (SaleInfo) o;
-        return getApartmentId().equals(saleInfo.getApartmentId()) && getPrice().equals(saleInfo.getPrice()) && getDate().equals(saleInfo.getDate());
+        return Objects.equals(getApartmentId(), saleInfo.getApartmentId())
+                && Objects.equals(getApartmentArea(), saleInfo.getApartmentArea())
+                && Objects.equals(getDealDate(), saleInfo.getDealDate())
+                && Objects.equals(getDealPrice(), saleInfo.getDealPrice());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getApartmentId(), getPrice(), getDate());
+        return Objects.hash(getApartmentId(), getApartmentArea(), getDealDate(), getDealPrice());
     }
 
     @Override
     public String toString() {
         return "SaleInfo{" +
                 "apartmentId=" + apartmentId +
-                ", price=" + price +
-                ", date=" + date +
+                ", apartmentArea=" + apartmentArea +
+                ", dealDate=" + dealDate +
+                ", dealPrice=" + dealPrice +
                 '}';
     }
 }

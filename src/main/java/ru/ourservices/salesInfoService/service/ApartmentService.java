@@ -4,10 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import ru.ourservices.salesInfoService.model.entity.Apartment;
+import ru.ourservices.salesInfoService.model.dto.ApartmentData;
 import ru.ourservices.salesInfoService.model.dto.City;
 
 import java.util.Arrays;
@@ -23,16 +25,25 @@ public class ApartmentService {
     @Cacheable("cities")
     public List<City> getCities() {
         RestTemplate restClient = builder.build();
-        ResponseEntity<City[]> response = restClient.getForEntity(baseUri.concat("/cities"), City[].class);
-        return Arrays.asList(response.getBody());
+        ResponseEntity<City[]> resp = restClient.getForEntity(baseUri.concat("/cities"), City[].class);
+        checkStatus(resp.getStatusCode());
+        return Arrays.asList(resp.getBody());
     }
 
     @Cacheable("apartments")
-    public List<Apartment> getApartments(String cityCode) {
-        RestTemplate restClient = builder.build();
+    public List<ApartmentData> getApartments(String cityCode) {
         StringBuilder uriBuilder = new StringBuilder();
         uriBuilder.append(baseUri).append("/city").append("/").append(cityCode).append("/apartments");
-        ResponseEntity<Apartment[]> response = restClient.getForEntity(uriBuilder.toString(), Apartment[].class);
-        return Arrays.asList(response.getBody());
+        RestTemplate restClient = builder.build();
+        ResponseEntity<ApartmentData[]> resp = restClient.getForEntity(uriBuilder.toString(), ApartmentData[].class);
+        checkStatus(resp.getStatusCode());
+        return Arrays.asList(resp.getBody());
+    }
+
+    private boolean checkStatus(HttpStatus status) {
+        if (status != HttpStatus.OK) {
+            throw new HttpClientErrorException(status);
+        }
+        return true;
     }
 }

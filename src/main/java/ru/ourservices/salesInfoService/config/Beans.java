@@ -26,17 +26,15 @@ public class Beans {
         return new ConcurrentMapCacheManager() {
             @Override
             protected Cache createConcurrentMapCache(String name) {
-                System.out.println("Cache name " + name);
-                return new ConcurrentMapCache(
-                        name,
-                        CacheBuilder.newBuilder()
-                                    .expireAfterWrite(lifetime, TimeUnit.SECONDS)
-                                    .build().asMap(),
-                        false);
+            return new ConcurrentMapCache(
+                    name,
+                    CacheBuilder.newBuilder()
+                                .expireAfterWrite(lifetime, TimeUnit.SECONDS)
+                                .build().asMap(),
+                    false);
             }
         };
     }
-
 }
 
 

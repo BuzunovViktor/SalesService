@@ -1,27 +1,18 @@
 package ru.ourservices.salesInfoService.service;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.ourservices.salesInfoService.model.aggregation.SumBigDecimalDouble;
-import ru.ourservices.salesInfoService.model.dto.SaleInfo;
+import ru.ourservices.salesInfoService.model.dto.*;
 import ru.ourservices.salesInfoService.model.entity.Apartment;
-import ru.ourservices.salesInfoService.model.dto.City;
-import ru.ourservices.salesInfoService.model.dto.SoldInfo;
+import ru.ourservices.salesInfoService.repository.DealRepository;
+import ru.ourservices.salesInfoService.model.aggregation.SumBigDecimalDouble;
 import ru.ourservices.salesInfoService.model.entity.Deal;
 import ru.ourservices.salesInfoService.repository.ApartmentRepository;
-import ru.ourservices.salesInfoService.repository.DealRepository;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.TypedQuery;
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SalesService {
@@ -31,57 +22,52 @@ public class SalesService {
     private DealRepository dealRepository;
     @Autowired
     private ApartmentRepository apartmentRepository;
-    @Autowired
-    private SessionFactory sessionFactory;
 
-    public List<Deal> getSoldApartments(String cityCode) {
+    public List<SaleInfo> getSoldApartments(String cityCode) {
         City city = findCity(cityCode);
         if (city == null) return null;
-        return dealRepository.findByCode(city.getCode());
-    }
-
-    public SoldInfo getSoldApartmentsInfoBy(String cityCode, LocalDate date) {
-
-
-        List<City> cities = apartmentService.getCities();
-        Apartment apartment = new Apartment(UUID.randomUUID(), "ekb", "123123",40.);
-        Deal deal = new Deal(new BigDecimal(100),LocalDate.now());
+        Apartment apartment = new Apartment(UUID.randomUUID(), "ekb", "123123",40F);
+        Deal deal = new Deal(new BigDecimal(100), java.sql.Date.valueOf(LocalDate.now()));
         deal.setApartment(apartment);
         apartment.setDeal(deal);
-        System.out.println(-2);
-        dealRepository.save(deal);
-        System.out.println("one");
-        Session session = sessionFactory.openSession();
-        System.out.println("two");
-        Query<SumBigDecimalDouble> query = session.createQuery(
-                "SELECT new ru.ourservices.salesInfoService.model.aggregation.SumBigDecimalDouble" +
-                        "(SUM(d.dealPrice) as income, SUM(a.area) as area)" +
-                        "FROM ru.ourservices.salesInfoService.model.entity.Deal d INNER JOIN " +
-                        "ru.ourservices.salesInfoService.model.entity.Apartment a ON d.apartment.id = a.id " +
-                        "WHERE d.apartment.cityCode = :cityCode AND d.localDate = :date", SumBigDecimalDouble.class);
-        query.setParameter("cityCode", "ekb");
-        query.setParameter("date", deal.getLocalDate());
-        System.out.println("3");
-        SumBigDecimalDouble val = query.getSingleResult();
-        System.out.println(val);
-        System.out.println("4");
-//        SumBigDecimalDouble incoming = dealRepository.calculateIncomeAndArea(cityCode);
-//        System.out.println(incoming);
-        //dealRepository.findAll().forEach(System.out::println);
-        session.close();
-        return new SoldInfo(cityCode, val.getArea(), val.getIncome(),deal.getLocalDate());
+        dealRepository.saveAndFlush(deal);
+        List<Deal> deals = dealRepository.getBy(city.getCode());
+        if (deals != null && deals.size() > 0) {
+            List<SaleInfo> sales = new ArrayList<>();
+            deals.forEach(d->{
+                SaleInfo saleInfo = new SaleInfo(d.getApartment().getUuid(),
+                        d.getApartment().getArea(), d.getDate(), d.getIncome());
+                sales.add(saleInfo);
+            });
+            return sales;
+        }
+        return null;
     }
 
-    public List<Apartment> getUnsoldApartments(String cityCode) {
-        List<Apartment> apartmentsFrom = apartmentService.getApartments(cityCode);
-//        List<Apartment> unsoldApartments = apartmentsFrom.stream()
-//                .filter(Predicate.not(a->a.getId()::equals))
-//                .collect(Collectors.toList());
-        return new ArrayList<>();
+    public SaleForMonthInfo getSalesInfoBy(String cityCode, LocalDate startDate, LocalDate endDate) {
+        if (startDate.isAfter(endDate)) throw new IllegalArgumentException("End date is less than start date.");
+        City city = findCity(cityCode);
+        if (city == null) return null;
+        SumBigDecimalDouble sum = dealRepository.calcIncomeAndArea(cityCode,
+                java.sql.Date.valueOf(startDate), java.sql.Date.valueOf(endDate));
+        return new SaleForMonthInfo(cityCode, sum.getArea(), sum.getIncome(), startDate, endDate);
     }
 
-    public boolean storeApartmentSale(String cityCode, SaleInfo saleInfo) {
-        return false;
+    public List<ApartmentData> getUnsoldApartments(String cityCode) {
+        List<ApartmentData> apartmentsFrom = apartmentService.getApartments(cityCode);
+        List<Apartment> soldApartments = apartmentRepository.getBy(cityCode);
+        if (soldApartments.size() == 0) return apartmentsFrom;
+        if (apartmentsFrom.size() > 0) {
+            Set<UUID> uuids = soldApartments.stream().map(Apartment::getUuid).collect(Collectors.toSet());
+            apartmentsFrom.removeIf(a->uuids.contains(a.getId()));
+            return apartmentsFrom;
+        }
+        return null;
+    }
+
+    public boolean storeApartmentSale(String cityCode, SoldApartmentInfo soldApartmentInfo) {
+        Apartment apartment= apartmentRepository.getByUUID(soldApartmentInfo.getId());
+        return apartment == null;
     }
 
     private City findCity(String cityCode) {
