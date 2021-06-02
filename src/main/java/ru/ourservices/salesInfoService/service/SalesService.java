@@ -55,6 +55,8 @@ public class SalesService {
     }
 
     public List<ApartmentData> getUnsoldApartments(String cityCode) {
+        City city = findCity(cityCode);
+        if (city == null) return null;
         List<ApartmentData> apartmentsBase = apartmentService.getApartments(cityCode);
         List<Apartment> soldApartments = apartmentRepository.getBy(cityCode);
         if (soldApartments.size() == 0) return apartmentsBase;

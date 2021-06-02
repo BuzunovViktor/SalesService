@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.context.request.WebRequest;
 import ru.ourservices.salesInfoService.utils.Utils;
@@ -18,6 +19,7 @@ public class CommonAdvice {
     private static final Logger logger = LoggerFactory.getLogger("Application");
 
     @ExceptionHandler({TypeMismatchException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object> handleTypeMismatchExceptions(Exception ex, WebRequest request) {
         logger.info(Utils.buildMessage(ex, request));
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
@@ -26,18 +28,21 @@ public class CommonAdvice {
     @ExceptionHandler({IllegalArgumentException.class,
                        HttpMessageNotReadableException.class,
                        DataIntegrityViolationException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ResponseEntity<Object>  handleIllegalArgumentExceptions(Exception ex, WebRequest request) {
         logger.info(Utils.buildMessage(ex, request));
         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({HttpClientErrorException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected ResponseEntity<Object> handleHttpClientErrorExceptions(Exception ex, WebRequest request) {
         logger.error(Utils.buildMessage(ex, request));
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     protected ResponseEntity<Object> handleAllExceptions(Exception ex, WebRequest request) {
         logger.error(Utils.buildMessage(ex, request));
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
