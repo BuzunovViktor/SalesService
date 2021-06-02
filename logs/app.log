@@ -1,1 +1,0 @@
-2021-06-02 14:25:58,252 INFO Application [http-nio-8080-exec-10] Deal created and saved. Deal{id=3, income=232444, date=2021-06-01, apartment=Apartment{id=3, uuid=b59196aa-8854-4113-bc6a-0a2d9bd47a03, cityCode='ekb', number='тнн-125', area=30.5}}
